@@ -1,9 +1,9 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quicker - Fast & Secure P2P File Sharing</title>
+    <title>Quikr  - Fast & Secure P2P File Sharing</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -40,7 +40,7 @@
                 <i data-lucide="zap" class="w-6 h-6 stroke-[2.5]"></i>
             </div>
             <div>
-                <h1 class="font-bold text-lg leading-tight tracking-wide">FlashShare <span class="text-emerald-400 font-normal text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 ml-1">P2P DIRECT</span></h1>
+                <h1 class="font-bold text-lg leading-tight tracking-wide">Quikr <span class="text-emerald-400 font-normal text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 ml-1">P2P DIRECT</span></h1>
                 <p class="text-xs text-gray-400">Zero Server • Encrypted • Max Speed</p>
             </div>
         </div>
@@ -334,12 +334,12 @@
                 UI.updateStatus('amber', 'Using Fallback Signaling Broker...');
                 
                 this.mqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
-                    clientId: 'flashshare_' + Math.random().toString(36).substr(2, 8),
+                    clientId: 'quikr_' + Math.random().toString(36).substr(2, 8),
                     clean: true,
                     connectTimeout: 5000
                 });
 
-                const topic = `flashshare/rooms/${roomId}`;
+                const topic = `quikr/rooms/${roomId}`;
 
                 this.mqttClient.on('connect', () => {
                     this.mqttClient.subscribe(topic);
@@ -375,6 +375,8 @@
                     this.dataChannel = dc;
                     this.setupDataChannelEvents();
                 } else {
+                    this.rtcConnection.ondatachannel = (event) => {
+                  } else {
                     this.rtcConnection.ondatachannel = (event) => {
                         this.dataChannel = event.channel;
                         this.setupDataChannelEvents();
