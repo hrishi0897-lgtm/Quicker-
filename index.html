@@ -1,4 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -26,6 +26,11 @@
             background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%2310B981FF' stroke-width='2' stroke-dasharray='8%2c 8' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
             background-color: rgba(16, 185, 129, 0.05);
         }
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .animate-pulse-fast { animation: pulse-fast 1s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between p-4 md:p-8">
@@ -91,31 +96,37 @@
                 </div>
             </div>
 
-            <!-- Right Panel: Dropzone & Active Transfers -->
-            <div class="md:col-span-2 glass-panel rounded-2xl p-6 flex flex-col justify-between min-h-[420px] glow-emerald">
-                <div id="dropzone" class="dashed-border flex-1 flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-all duration-200 hover:border-emerald-500/50 group relative">
+            <!-- Right Panel: Dropzone & Upload Status Queue -->
+            <div class="md:col-span-2 glass-panel rounded-2xl p-6 flex flex-col justify-between min-h-[440px] glow-emerald">
+                <div id="dropzone" class="dashed-border py-8 px-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:border-emerald-500/50 group relative">
                     <input type="file" id="file-input" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
-                    <div class="w-16 h-16 rounded-2xl bg-slate-800/80 group-hover:bg-emerald-500/10 flex items-center justify-center text-gray-400 group-hover:text-emerald-400 transition-colors mb-4 border border-slate-700 group-hover:border-emerald-500/30">
-                        <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+                    <div class="w-14 h-14 rounded-2xl bg-slate-800/80 group-hover:bg-emerald-500/10 flex items-center justify-center text-gray-400 group-hover:text-emerald-400 transition-colors mb-3 border border-slate-700 group-hover:border-emerald-500/30">
+                        <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
                     </div>
-                    <h3 class="font-semibold text-gray-200 text-lg mb-1">Drop files here or click to select</h3>
+                    <h3 class="font-semibold text-gray-200 text-base mb-1">Drop files here or click to select</h3>
                     <p class="text-xs text-gray-400 max-w-sm">
                         Select any file to stream directly to the connected receiver in real time.
                     </p>
                 </div>
 
-                <!-- Transfer Progress Panel -->
+                <!-- Transfer Progress & Status Panel -->
                 <div id="sender-transfers-container" class="mt-6 space-y-3 hidden">
-                    <div class="flex items-center justify-between text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                        <span>Upload Progress</span>
-                        <span id="sender-speed-indicator" class="text-emerald-400 font-mono font-bold">0 KB/s</span>
+                    <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-gray-400 pb-2 border-b border-slate-800">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+                            Uploading File Status
+                        </span>
+                        <div class="flex items-center space-x-3">
+                            <span id="sender-file-count" class="text-gray-500 font-mono">0 files</span>
+                            <span id="sender-speed-indicator" class="text-emerald-400 font-mono font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">0 KB/s</span>
+                        </div>
                     </div>
-                    <div id="sender-transfer-list" class="space-y-2 max-h-[200px] overflow-y-auto pr-1"></div>
+                    <div id="sender-transfer-list" class="space-y-3 max-h-[240px] overflow-y-auto pr-1"></div>
                 </div>
             </div>
         </div>
 
-        <!-- RECEIVER UI VIEW (Shown when opened via QR or Room Link) -->
+        <!-- RECEIVER UI VIEW -->
         <div id="receiver-view" class="hidden max-w-2xl mx-auto glass-panel rounded-2xl p-6 space-y-6 glow-cyan">
             <div class="flex items-center justify-between border-b border-slate-800 pb-4">
                 <div class="flex items-center space-x-3">
@@ -128,28 +139,25 @@
                     </div>
                 </div>
                 <div class="text-right">
-                    <span id="receiver-speed-indicator" class="text-xs font-mono font-bold text-cyan-400">0 KB/s</span>
+                    <span id="receiver-speed-indicator" class="text-xs font-mono font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-md">0 KB/s</span>
                 </div>
             </div>
 
-            <!-- Waiting / Idle Card -->
             <div id="receiver-idle-state" class="text-center py-10 space-y-3 bg-slate-900/50 rounded-xl border border-slate-800/80 p-6">
                 <div class="w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto text-cyan-400 animate-bounce">
                     <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
                 </div>
                 <h3 class="text-sm font-semibold text-gray-200">Ready to Receive Files</h3>
                 <p class="text-xs text-gray-400 max-w-xs mx-auto">
-                    Keep this browser window open. Files sent from the host device will appear here instantly with direct download buttons.
+                    Keep this window open. Files sent from the sender will appear here with instant download buttons.
                 </p>
             </div>
 
-            <!-- Incoming Transfer Queue -->
             <div id="receiver-transfers-container" class="space-y-3 hidden">
                 <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Incoming Files</h3>
                 <div id="receiver-transfer-list" class="space-y-3 max-h-[300px] overflow-y-auto pr-1"></div>
             </div>
 
-            <!-- Optional 2-Way Upload for Receiver -->
             <div class="pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-gray-400">
                 <span>Want to send files back?</span>
                 <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-700 text-gray-300 px-3 py-1.5 rounded-lg transition-colors font-medium">
@@ -171,7 +179,6 @@
 
     <!-- Pure JS Minimal QR Code Generator -->
     <script>
-        /* Pure JS QR Code Generator */
         var QRCodeCanvas = (function() {
             function drawQR(text, canvasId) {
                 const canvas = document.getElementById(canvasId);
@@ -180,14 +187,12 @@
                 canvas.width = 200;
                 canvas.height = 200;
                 
-                // Fetch external QR image or draw fallback QR pattern onto canvas cleanly
                 const img = new Image();
                 img.crossOrigin = "Anonymous";
                 img.onload = function() {
                     ctx.drawImage(img, 0, 0, 200, 200);
                 };
                 img.onerror = function() {
-                    // Simple procedural fallback pattern if network blocks image
                     ctx.fillStyle = "#ffffff";
                     ctx.fillRect(0,0,200,200);
                     ctx.fillStyle = "#000000";
@@ -222,6 +227,7 @@
             senderTransfersContainer: document.getElementById('sender-transfers-container'),
             senderTransferList: document.getElementById('sender-transfer-list'),
             senderSpeedIndicator: document.getElementById('sender-speed-indicator'),
+            senderFileCount: document.getElementById('sender-file-count'),
 
             // Receiver DOM
             receiverIdleState: document.getElementById('receiver-idle-state'),
@@ -231,6 +237,8 @@
             receiverFileInput: document.getElementById('receiver-file-input'),
             senderIdLabel: document.getElementById('sender-id-label'),
             toastContainer: document.getElementById('toast-container'),
+
+            totalSenderFiles: 0,
 
             setMode(isInitiator) {
                 if (isInitiator) {
@@ -280,26 +288,43 @@
                     this.receiverIdleState.classList.add('hidden');
                 }
 
+                if (isUpload) {
+                    this.totalSenderFiles++;
+                    this.senderFileCount.innerText = `${this.totalSenderFiles} ${this.totalSenderFiles === 1 ? 'file' : 'files'}`;
+                }
+
                 const item = document.createElement('div');
                 item.id = `item-${id}`;
-                item.className = 'bg-slate-900/90 border border-slate-800 rounded-xl p-3 space-y-2';
+                item.className = 'bg-slate-900/90 border border-slate-800 rounded-xl p-3 space-y-2 transition-all';
 
                 const directionColor = isUpload ? 'text-emerald-400' : 'text-cyan-400';
                 const iconSvg = isUpload 
-                    ? `<svg class="w-4 h-4 ${directionColor} shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>`
-                    : `<svg class="w-4 h-4 ${directionColor} shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>`;
+                    ? `<svg class="w-4 h-4 ${directionColor} shrink-0 animate-bounce" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>`
+                    : `<svg class="w-4 h-4 ${directionColor} shrink-0 animate-bounce" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>`;
+
+                const statusPill = isUpload 
+                    ? `<span id="status-badge-${id}" class="text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded text-[11px] font-mono font-medium flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Uploading 0%
+                       </span>`
+                    : `<span id="status-badge-${id}" class="text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded text-[11px] font-mono font-medium flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span> Receiving 0%
+                       </span>`;
 
                 item.innerHTML = `
                     <div class="flex items-center justify-between text-xs">
                         <div class="flex items-center space-x-2 truncate pr-2">
-                            ${iconSvg}
+                            <span id="icon-box-${id}">${iconSvg}</span>
                             <span class="font-medium text-gray-200 truncate">${this.escapeHtml(fileName)}</span>
                             <span class="text-gray-500 font-mono shrink-0">(${this.formatBytes(fileSize)})</span>
                         </div>
-                        <span id="status-badge-${id}" class="text-gray-400 font-mono text-[11px] shrink-0">0%</span>
+                        ${statusPill}
                     </div>
                     <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
                         <div id="progress-${id}" class="${isUpload ? 'bg-gradient-to-r from-emerald-500 to-cyan-500' : 'bg-gradient-to-r from-cyan-500 to-blue-500'} h-full w-0 transition-all duration-100"></div>
+                    </div>
+                    <div class="flex items-center justify-between text-[11px] text-gray-400 font-mono">
+                        <span id="transferred-bytes-${id}">0 B of ${this.formatBytes(fileSize)}</span>
+                        <span id="speed-tag-${id}" class="text-gray-500">Preparing stream...</span>
                     </div>
                     <div id="action-${id}" class="hidden flex justify-end pt-1"></div>
                 `;
@@ -307,22 +332,51 @@
                 container.prepend(item);
             },
 
-            updateTransferProgress(id, current, total) {
+            updateTransferProgress(id, current, total, speedStr = '') {
                 const percent = Math.min(100, Math.round((current / total) * 100));
                 const progressBar = document.getElementById(`progress-${id}`);
                 const statusBadge = document.getElementById(`status-badge-${id}`);
+                const transferredBytes = document.getElementById(`transferred-bytes-${id}`);
+                const speedTag = document.getElementById(`speed-tag-${id}`);
 
                 if (progressBar) progressBar.style.width = `${percent}%`;
-                if (statusBadge) statusBadge.innerText = `${percent}%`;
+                
+                if (statusBadge) {
+                    const isUploading = statusBadge.innerText.includes('Upload');
+                    const label = isUploading ? 'Uploading' : 'Receiving';
+                    const colorClass = isUploading ? 'text-emerald-400' : 'text-cyan-400';
+                    const bgDot = isUploading ? 'bg-emerald-400' : 'bg-cyan-400';
+                    
+                    statusBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${bgDot} animate-ping"></span> ${label} ${percent}%`;
+                }
+
+                if (transferredBytes) {
+                    transferredBytes.innerText = `${this.formatBytes(current)} of ${this.formatBytes(total)}`;
+                }
+
+                if (speedTag && speedStr) {
+                    speedTag.innerText = speedStr;
+                }
             },
 
             markTransferComplete(id, downloadUrl, fileName) {
                 const statusBadge = document.getElementById(`status-badge-${id}`);
                 const actionContainer = document.getElementById(`action-${id}`);
+                const iconBox = document.getElementById(`icon-box-${id}`);
+                const speedTag = document.getElementById(`speed-tag-${id}`);
+
+                if (iconBox) {
+                    iconBox.innerHTML = `<svg class="w-4 h-4 text-emerald-400 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
+                }
 
                 if (statusBadge) {
-                    statusBadge.innerText = 'Completed';
-                    statusBadge.className = 'text-emerald-400 font-semibold font-mono text-[11px]';
+                    statusBadge.innerHTML = `<svg class="w-3 h-3 text-emerald-400 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sent & Completed`;
+                    statusBadge.className = 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded text-[11px] font-mono font-semibold flex items-center gap-1';
+                }
+
+                if (speedTag) {
+                    speedTag.innerText = 'Transfer finished';
+                    speedTag.className = 'text-emerald-400/80';
                 }
 
                 if (downloadUrl && actionContainer) {
@@ -616,16 +670,17 @@
 
                 const now = Date.now();
                 const timeDiff = (now - recv.lastTime) / 1000;
+                let speedStr = '';
                 if (timeDiff >= 0.5) {
                     const bytesDiff = recv.receivedSize - recv.lastBytes;
-                    const speedStr = UI.formatSpeed(bytesDiff / timeDiff);
+                    speedStr = UI.formatSpeed(bytesDiff / timeDiff);
                     UI.receiverSpeedIndicator.innerText = speedStr;
                     UI.senderSpeedIndicator.innerText = speedStr;
                     recv.lastTime = now;
                     recv.lastBytes = recv.receivedSize;
                 }
 
-                UI.updateTransferProgress(currentId, recv.receivedSize, recv.size);
+                UI.updateTransferProgress(currentId, recv.receivedSize, recv.size, speedStr);
 
                 if (recv.receivedSize >= recv.size) {
                     this.finalizeReceivedFile(currentId);
@@ -687,16 +742,17 @@
 
                         const now = Date.now();
                         const timeDiff = (now - lastTime) / 1000;
+                        let speedStr = '';
                         if (timeDiff >= 0.5) {
                             const bytesDiff = offset - lastBytes;
-                            const speedStr = UI.formatSpeed(bytesDiff / timeDiff);
+                            speedStr = UI.formatSpeed(bytesDiff / timeDiff);
                             UI.senderSpeedIndicator.innerText = speedStr;
                             UI.receiverSpeedIndicator.innerText = speedStr;
                             lastTime = now;
                             lastBytes = offset;
                         }
 
-                        UI.updateTransferProgress(fileId, offset, file.size);
+                        UI.updateTransferProgress(fileId, offset, file.size, speedStr);
                     }
 
                     UI.markTransferComplete(fileId, null, file.name);
