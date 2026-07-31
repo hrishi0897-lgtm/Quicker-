@@ -1,20 +1,17 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/>```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quikr  - Fast & Secure P2P File Sharing</title>
+    <title>Quikr Direct - Fast & Secure P2P File Sharing</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PeerJS -->
+    <!-- PeerJS for WebRTC -->
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <!-- MQTT.js for Fallback WebRTC Signaling -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.3.7/mqtt.min.js"></script>
-    <!-- QRCode.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
@@ -37,7 +34,7 @@
     <header class="max-w-4xl mx-auto w-full flex items-center justify-between py-4">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-emerald-500/20">
-                <i data-lucide="zap" class="w-6 h-6 stroke-[2.5]"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
             </div>
             <div>
                 <h1 class="font-bold text-lg leading-tight tracking-wide">Quikr <span class="text-emerald-400 font-normal text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 ml-1">P2P DIRECT</span></h1>
@@ -51,7 +48,7 @@
                 <span id="status-text" class="text-gray-300 font-medium">Initializing...</span>
             </div>
             <button id="retry-btn" class="hidden p-2 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-gray-300 transition-colors" title="Reconnect Signaling">
-                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
             </button>
         </div>
     </header>
@@ -65,7 +62,7 @@
             <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between space-y-6">
                 <div>
                     <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4 flex items-center gap-2">
-                        <i data-lucide="link-2" class="w-4 h-4 text-emerald-400"></i> Sharing Connection
+                        <svg class="w-4 h-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg> Sharing Connection
                     </h2>
 
                     <div class="space-y-4">
@@ -74,20 +71,20 @@
                         </p>
 
                         <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
-                            <span id="share-url" class="text-xs text-emerald-300 font-mono truncate mr-2">Generating secure room...</span>
+                            <span id="share-url" class="text-xs text-emerald-300 font-mono truncate mr-2">Generating room...</span>
                             <button id="copy-btn" class="p-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition-colors border border-emerald-500/20 shrink-0" title="Copy Link">
-                                <i data-lucide="copy" class="w-4 h-4"></i>
+                                <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
                             </button>
                         </div>
 
-                        <div class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-inner w-full aspect-square max-w-[170px] mx-auto">
-                            <div id="qrcode"></div>
+                        <div class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-inner w-full aspect-square max-w-[170px] mx-auto overflow-hidden">
+                            <img id="qr-img" src="" alt="QR Code" class="w-full h-full object-contain">
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-3 text-xs text-emerald-300/80 flex items-start gap-2.5">
-                    <i data-lucide="shield-check" class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5"></i>
+                    <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
                     <span>Direct device-to-device transport. Zero cloud storage or bandwidth limits.</span>
                 </div>
             </div>
@@ -97,7 +94,7 @@
                 <div id="dropzone" class="dashed-border flex-1 flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-all duration-200 hover:border-emerald-500/50 group relative">
                     <input type="file" id="file-input" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                     <div class="w-16 h-16 rounded-2xl bg-slate-800/80 group-hover:bg-emerald-500/10 flex items-center justify-center text-gray-400 group-hover:text-emerald-400 transition-colors mb-4 border border-slate-700 group-hover:border-emerald-500/30">
-                        <i data-lucide="upload-cloud" class="w-8 h-8"></i>
+                        <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
                     </div>
                     <h3 class="font-semibold text-gray-200 text-lg mb-1">Drop files here or click to select</h3>
                     <p class="text-xs text-gray-400 max-w-sm">
@@ -120,8 +117,8 @@
     <footer class="max-w-4xl mx-auto w-full text-center py-4 text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-800/60">
         <div>WebRTC P2P Transfer Engine v2.0</div>
         <div class="flex items-center space-x-4">
-            <span class="flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3 text-emerald-400"></i> DTLS-SRTP Encrypted</span>
-            <span class="flex items-center gap-1"><i data-lucide="radio" class="w-3 h-3 text-cyan-400"></i> Direct Channel</span>
+            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> DTLS-SRTP Encrypted</span>
+            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><path d="M12 12h.01"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9c3.9 3.9 3.9 10.3 0 14.2"/></svg> Direct Channel</span>
         </div>
     </footer>
 
@@ -132,6 +129,7 @@
             statusText: document.getElementById('status-text'),
             retryBtn: document.getElementById('retry-btn'),
             shareUrl: document.getElementById('share-url'),
+            qrImg: document.getElementById('qr-img'),
             dropzone: document.getElementById('dropzone'),
             fileInput: document.getElementById('file-input'),
             transfersContainer: document.getElementById('transfers-container'),
@@ -150,16 +148,8 @@
                 const fullLink = `${baseUrl}?room=${id}`;
                 this.shareUrl.innerText = fullLink;
 
-                const qrContainer = document.getElementById('qrcode');
-                qrContainer.innerHTML = '';
-                new QRCode(qrContainer, {
-                    text: fullLink,
-                    width: 140,
-                    height: 140,
-                    colorDark: "#0b0f19",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.M
-                });
+                // Native API image for robust QR rendering
+                this.qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(fullLink)}`;
             },
 
             createTransferItemUI(id, fileName, fileSize, direction) {
@@ -167,13 +157,16 @@
                 item.id = `item-${id}`;
                 item.className = 'bg-slate-900/90 border border-slate-800 rounded-xl p-3 space-y-2';
 
-                const iconName = direction === 'upload' ? 'upload' : 'download';
-                const directionColor = direction === 'upload' ? 'text-cyan-400' : 'text-emerald-400';
+                const isUpload = direction === 'upload';
+                const directionColor = isUpload ? 'text-cyan-400' : 'text-emerald-400';
+                const iconSvg = isUpload 
+                    ? `<svg class="w-4 h-4 ${directionColor} shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>`
+                    : `<svg class="w-4 h-4 ${directionColor} shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>`;
 
                 item.innerHTML = `
                     <div class="flex items-center justify-between text-xs">
                         <div class="flex items-center space-x-2 truncate pr-2">
-                            <i data-lucide="${iconName}" class="w-4 h-4 ${directionColor} shrink-0"></i>
+                            ${iconSvg}
                             <span class="font-medium text-gray-200 truncate">${this.escapeHtml(fileName)}</span>
                             <span class="text-gray-500 font-mono shrink-0">(${this.formatBytes(fileSize)})</span>
                         </div>
@@ -186,7 +179,6 @@
                 `;
 
                 this.transferList.prepend(item);
-                lucide.createIcons();
             },
 
             updateTransferProgress(id, current, total) {
@@ -211,11 +203,10 @@
                     actionContainer.classList.remove('hidden');
                     actionContainer.innerHTML = `
                         <a href="${downloadUrl}" download="${this.escapeHtml(fileName)}" class="inline-flex items-center space-x-1 text-xs bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-lg transition-colors mt-1 font-medium">
-                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                            <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                             <span>Save File</span>
                         </a>
                     `;
-                    lucide.createIcons();
                 }
             },
 
@@ -271,7 +262,15 @@
             init(roomId, isInitiator) {
                 UI.updateStatus('amber', 'Connecting network...');
                 UI.retryBtn.classList.add('hidden');
+                
+                // Immediately display generated link & QR code
                 UI.generateShareLink(roomId);
+
+                if (typeof Peer === 'undefined') {
+                    console.warn("PeerJS library unavailable. Switching directly to MQTT signaling...");
+                    this.tryMqttFallback(roomId, isInitiator);
+                    return;
+                }
 
                 this.tryPeerJS(roomId, isInitiator);
             },
@@ -287,7 +286,13 @@
                     }
                 };
 
-                this.peerJsInstance = isInitiator ? new Peer(roomId, peerOptions) : new Peer(peerOptions);
+                try {
+                    this.peerJsInstance = isInitiator ? new Peer(roomId, peerOptions) : new Peer(peerOptions);
+                } catch(e) {
+                    console.warn("PeerJS init failed, attempting MQTT fallback...", e);
+                    this.tryMqttFallback(roomId, isInitiator);
+                    return;
+                }
 
                 let peerJsTimeout = setTimeout(() => {
                     if (!this.dataChannel && UI.statusText.innerText.includes('Connecting')) {
@@ -295,7 +300,7 @@
                         if (this.peerJsInstance) this.peerJsInstance.destroy();
                         this.tryMqttFallback(roomId, isInitiator);
                     }
-                }, 4000);
+                }, 3500);
 
                 this.peerJsInstance.on('open', () => {
                     clearTimeout(peerJsTimeout);
@@ -331,13 +336,25 @@
             },
 
             tryMqttFallback(roomId, isInitiator) {
-                UI.updateStatus('amber', 'Using Fallback Signaling Broker...');
+                UI.updateStatus('amber', 'Connecting via fallback broker...');
                 
-                this.mqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
-                    clientId: 'quikr_' + Math.random().toString(36).substr(2, 8),
-                    clean: true,
-                    connectTimeout: 5000
-                });
+                if (typeof mqtt === 'undefined') {
+                    UI.updateStatus('red', 'Signaling unavailable. Tap retry.');
+                    UI.retryBtn.classList.remove('hidden');
+                    return;
+                }
+
+                try {
+                    this.mqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
+                        clientId: 'quikr_' + Math.random().toString(36).substr(2, 8),
+                        clean: true,
+                        connectTimeout: 5000
+                    });
+                } catch (e) {
+                    UI.updateStatus('red', 'Connection Error');
+                    UI.retryBtn.classList.remove('hidden');
+                    return;
+                }
 
                 const topic = `quikr/rooms/${roomId}`;
 
@@ -346,9 +363,9 @@
                     this.setupNativeWebRTC(topic, isInitiator);
 
                     if (isInitiator) {
-                        UI.updateStatus('amber', 'Waiting for peer (Fallback mode)...');
+                        UI.updateStatus('amber', 'Waiting for peer...');
                     } else {
-                        UI.updateStatus('amber', 'Connecting peer (Fallback mode)...');
+                        UI.updateStatus('amber', 'Connecting peer...');
                         this.mqttClient.publish(topic, JSON.stringify({ type: 'join' }));
                     }
                 });
@@ -375,8 +392,6 @@
                     this.dataChannel = dc;
                     this.setupDataChannelEvents();
                 } else {
-                    this.rtcConnection.ondatachannel = (event) => {
-                  } else {
                     this.rtcConnection.ondatachannel = (event) => {
                         this.dataChannel = event.channel;
                         this.setupDataChannelEvents();
@@ -422,7 +437,7 @@
                 this.dataChannel.binaryType = 'arraybuffer';
 
                 const onOpen = () => {
-                    UI.updateStatus('emerald', 'Direct P2P Link Active');
+                    UI.updateStatus('emerald', 'Connected Direct P2P');
                     UI.showToast('P2P Data Channel Ready', 'success');
                 };
 
@@ -564,12 +579,10 @@
 
         // App Initialization
         document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-
             const urlParams = new URLSearchParams(window.location.search);
             const targetRoomId = urlParams.get('room') || urlParams.get('peer');
 
-            let roomId = targetRoomId || 'flash_' + Math.random().toString(36).substring(2, 10);
+            let roomId = targetRoomId || 'quikr_' + Math.random().toString(36).substring(2, 10);
             let isInitiator = !targetRoomId;
 
             WebRTC.init(roomId, isInitiator);
@@ -620,3 +633,5 @@
     </script>
 </body>
 </html>
+
+```
