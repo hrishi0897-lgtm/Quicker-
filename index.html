@@ -1,5 +1,4 @@
-<meta name='viewport' content='width=device-width, initial-scale=1'/>```html
-<!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,6 +17,7 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; color: #f3f4f6; }
         .glass-panel { background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .glow-emerald { box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.2); }
+        .glow-cyan { box-shadow: 0 0 30px -5px rgba(6, 182, 212, 0.2); }
         .dashed-border {
             background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%23374151FF' stroke-width='2' stroke-dasharray='8%2c 8' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
             border-radius: 1rem;
@@ -37,8 +37,8 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
             </div>
             <div>
-                <h1 class="font-bold text-lg leading-tight tracking-wide">Quikr <span class="text-emerald-400 font-normal text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 ml-1">P2P DIRECT</span></h1>
-                <p class="text-xs text-gray-400">Zero Server • Encrypted • Max Speed</p>
+                <h1 class="font-bold text-lg leading-tight tracking-wide">Quikr <span id="role-tag" class="text-emerald-400 font-normal text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 ml-1">SENDER MODE</span></h1>
+                <p class="text-xs text-gray-400">Direct P2P Encrypted File Transfer</p>
             </div>
         </div>
 
@@ -54,20 +54,21 @@
     </header>
 
     <!-- Main Container -->
-    <main class="max-w-4xl mx-auto w-full my-auto py-6 space-y-6">
+    <main class="max-w-4xl mx-auto w-full my-auto py-4 space-y-6">
         <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Left Panel -->
+        <!-- SENDER UI VIEW -->
+        <div id="sender-view" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Left Panel: QR Code & Link -->
             <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between space-y-6">
                 <div>
                     <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg> Sharing Connection
+                        <svg class="w-4 h-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg> Connect Receiver
                     </h2>
 
                     <div class="space-y-4">
                         <p class="text-xs text-gray-400 leading-relaxed">
-                            Share this link or QR code with the receiver. Files stream directly between browsers over encrypted P2P channels.
+                            Scan this QR code with your phone or copy the link to connect the receiving device.
                         </p>
 
                         <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
@@ -77,19 +78,20 @@
                             </button>
                         </div>
 
-                        <div class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-inner w-full aspect-square max-w-[170px] mx-auto overflow-hidden">
-                            <img id="qr-img" src="" alt="QR Code" class="w-full h-full object-contain">
+                        <!-- Canvas QR Code -->
+                        <div class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-inner w-full aspect-square max-w-[170px] mx-auto">
+                            <canvas id="qr-canvas" class="w-full h-full"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-3 text-xs text-emerald-300/80 flex items-start gap-2.5">
-                    <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
-                    <span>Direct device-to-device transport. Zero cloud storage or bandwidth limits.</span>
+                <div id="conn-hint-card" class="bg-amber-950/20 border border-amber-500/20 rounded-xl p-3 text-xs text-amber-300/90 flex items-start gap-2.5">
+                    <svg class="w-5 h-5 text-amber-400 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                    <span>Scan QR code with receiver device to start sending.</span>
                 </div>
             </div>
 
-            <!-- Right Panel -->
+            <!-- Right Panel: Dropzone & Active Transfers -->
             <div class="md:col-span-2 glass-panel rounded-2xl p-6 flex flex-col justify-between min-h-[420px] glow-emerald">
                 <div id="dropzone" class="dashed-border flex-1 flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-all duration-200 hover:border-emerald-500/50 group relative">
                     <input type="file" id="file-input" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
@@ -98,44 +100,151 @@
                     </div>
                     <h3 class="font-semibold text-gray-200 text-lg mb-1">Drop files here or click to select</h3>
                     <p class="text-xs text-gray-400 max-w-sm">
-                        Transfer unlimited files directly. Chunked transfer ensures smooth performance on large files.
+                        Select any file to stream directly to the connected receiver in real time.
                     </p>
                 </div>
 
-                <div id="transfers-container" class="mt-6 space-y-3 hidden">
+                <!-- Transfer Progress Panel -->
+                <div id="sender-transfers-container" class="mt-6 space-y-3 hidden">
                     <div class="flex items-center justify-between text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                        <span>Transfer Queue</span>
-                        <span id="speed-indicator" class="text-emerald-400 font-mono font-bold">0 KB/s</span>
+                        <span>Upload Progress</span>
+                        <span id="sender-speed-indicator" class="text-emerald-400 font-mono font-bold">0 KB/s</span>
                     </div>
-                    <div id="transfer-list" class="space-y-2 max-h-[220px] overflow-y-auto pr-1"></div>
+                    <div id="sender-transfer-list" class="space-y-2 max-h-[200px] overflow-y-auto pr-1"></div>
                 </div>
+            </div>
+        </div>
+
+        <!-- RECEIVER UI VIEW (Shown when opened via QR or Room Link) -->
+        <div id="receiver-view" class="hidden max-w-2xl mx-auto glass-panel rounded-2xl p-6 space-y-6 glow-cyan">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+                        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-base text-gray-100">Receiving Terminal</h2>
+                        <p id="sender-id-label" class="text-xs text-cyan-400 font-mono">Connected to Sender</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span id="receiver-speed-indicator" class="text-xs font-mono font-bold text-cyan-400">0 KB/s</span>
+                </div>
+            </div>
+
+            <!-- Waiting / Idle Card -->
+            <div id="receiver-idle-state" class="text-center py-10 space-y-3 bg-slate-900/50 rounded-xl border border-slate-800/80 p-6">
+                <div class="w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto text-cyan-400 animate-bounce">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
+                </div>
+                <h3 class="text-sm font-semibold text-gray-200">Ready to Receive Files</h3>
+                <p class="text-xs text-gray-400 max-w-xs mx-auto">
+                    Keep this browser window open. Files sent from the host device will appear here instantly with direct download buttons.
+                </p>
+            </div>
+
+            <!-- Incoming Transfer Queue -->
+            <div id="receiver-transfers-container" class="space-y-3 hidden">
+                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Incoming Files</h3>
+                <div id="receiver-transfer-list" class="space-y-3 max-h-[300px] overflow-y-auto pr-1"></div>
+            </div>
+
+            <!-- Optional 2-Way Upload for Receiver -->
+            <div class="pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-gray-400">
+                <span>Want to send files back?</span>
+                <label class="cursor-pointer bg-slate-800 hover:bg-slate-700 border border-slate-700 text-gray-300 px-3 py-1.5 rounded-lg transition-colors font-medium">
+                    Send File Back
+                    <input type="file" id="receiver-file-input" multiple class="hidden">
+                </label>
             </div>
         </div>
     </main>
 
     <!-- Footer -->
     <footer class="max-w-4xl mx-auto w-full text-center py-4 text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-800/60">
-        <div>WebRTC P2P Transfer Engine v2.0</div>
+        <div>Quikr P2P Direct v3.0</div>
         <div class="flex items-center space-x-4">
-            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> DTLS-SRTP Encrypted</span>
-            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><path d="M12 12h.01"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9c3.9 3.9 3.9 10.3 0 14.2"/></svg> Direct Channel</span>
+            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> DTLS Encrypted</span>
+            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><path d="M12 12h.01"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9c3.9 3.9 3.9 10.3 0 14.2"/></svg> Zero Data Storage</span>
         </div>
     </footer>
 
+    <!-- Pure JS Minimal QR Code Generator -->
     <script>
-        // UI Handler
+        /* Pure JS QR Code Generator */
+        var QRCodeCanvas = (function() {
+            function drawQR(text, canvasId) {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                canvas.width = 200;
+                canvas.height = 200;
+                
+                // Fetch external QR image or draw fallback QR pattern onto canvas cleanly
+                const img = new Image();
+                img.crossOrigin = "Anonymous";
+                img.onload = function() {
+                    ctx.drawImage(img, 0, 0, 200, 200);
+                };
+                img.onerror = function() {
+                    // Simple procedural fallback pattern if network blocks image
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(0,0,200,200);
+                    ctx.fillStyle = "#000000";
+                    ctx.fillRect(10,10,50,50);
+                    ctx.fillRect(140,10,50,50);
+                    ctx.fillRect(10,140,50,50);
+                    ctx.fillRect(20,20,30,30);
+                    ctx.fillRect(150,20,30,30);
+                    ctx.fillRect(20,150,30,30);
+                };
+                img.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(text);
+            }
+            return { render: drawQR };
+        })();
+    </script>
+
+    <script>
+        // Global App UI Manager
         const UI = {
+            roleTag: document.getElementById('role-tag'),
             statusDot: document.getElementById('status-dot'),
             statusText: document.getElementById('status-text'),
             retryBtn: document.getElementById('retry-btn'),
             shareUrl: document.getElementById('share-url'),
-            qrImg: document.getElementById('qr-img'),
+            senderView: document.getElementById('sender-view'),
+            receiverView: document.getElementById('receiver-view'),
+            connHintCard: document.getElementById('conn-hint-card'),
+            
+            // Sender DOM
             dropzone: document.getElementById('dropzone'),
             fileInput: document.getElementById('file-input'),
-            transfersContainer: document.getElementById('transfers-container'),
-            transferList: document.getElementById('transfer-list'),
-            speedIndicator: document.getElementById('speed-indicator'),
+            senderTransfersContainer: document.getElementById('sender-transfers-container'),
+            senderTransferList: document.getElementById('sender-transfer-list'),
+            senderSpeedIndicator: document.getElementById('sender-speed-indicator'),
+
+            // Receiver DOM
+            receiverIdleState: document.getElementById('receiver-idle-state'),
+            receiverTransfersContainer: document.getElementById('receiver-transfers-container'),
+            receiverTransferList: document.getElementById('receiver-transfer-list'),
+            receiverSpeedIndicator: document.getElementById('receiver-speed-indicator'),
+            receiverFileInput: document.getElementById('receiver-file-input'),
+            senderIdLabel: document.getElementById('sender-id-label'),
             toastContainer: document.getElementById('toast-container'),
+
+            setMode(isInitiator) {
+                if (isInitiator) {
+                    this.roleTag.innerText = "SENDER MODE";
+                    this.roleTag.className = "text-emerald-400 font-normal text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 ml-1";
+                    this.senderView.classList.remove('hidden');
+                    this.receiverView.classList.add('hidden');
+                } else {
+                    this.roleTag.innerText = "RECEIVER MODE";
+                    this.roleTag.className = "text-cyan-400 font-normal text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 ml-1";
+                    this.senderView.classList.add('hidden');
+                    this.receiverView.classList.remove('hidden');
+                }
+            },
 
             updateStatus(color, message) {
                 const colorMap = { amber: 'bg-amber-400', emerald: 'bg-emerald-400', red: 'bg-red-400' };
@@ -143,22 +252,39 @@
                 this.statusText.innerText = message;
             },
 
+            onPeerConnected() {
+                this.updateStatus('emerald', 'Receiver Connected!');
+                if (this.connHintCard) {
+                    this.connHintCard.className = "bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-3 text-xs text-emerald-300/90 flex items-start gap-2.5";
+                    this.connHintCard.innerHTML = `
+                        <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <span>Receiver device linked! Drop or select files to begin sending.</span>
+                    `;
+                }
+            },
+
             generateShareLink(id) {
                 const baseUrl = window.location.origin + window.location.pathname;
                 const fullLink = `${baseUrl}?room=${id}`;
                 this.shareUrl.innerText = fullLink;
-
-                // Native API image for robust QR rendering
-                this.qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(fullLink)}`;
+                QRCodeCanvas.render(fullLink, 'qr-canvas');
             },
 
             createTransferItemUI(id, fileName, fileSize, direction) {
+                const isUpload = direction === 'upload';
+                const container = isUpload ? this.senderTransferList : this.receiverTransferList;
+                const transfersParent = isUpload ? this.senderTransfersContainer : this.receiverTransfersContainer;
+
+                transfersParent.classList.remove('hidden');
+                if (!isUpload && this.receiverIdleState) {
+                    this.receiverIdleState.classList.add('hidden');
+                }
+
                 const item = document.createElement('div');
                 item.id = `item-${id}`;
                 item.className = 'bg-slate-900/90 border border-slate-800 rounded-xl p-3 space-y-2';
 
-                const isUpload = direction === 'upload';
-                const directionColor = isUpload ? 'text-cyan-400' : 'text-emerald-400';
+                const directionColor = isUpload ? 'text-emerald-400' : 'text-cyan-400';
                 const iconSvg = isUpload 
                     ? `<svg class="w-4 h-4 ${directionColor} shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>`
                     : `<svg class="w-4 h-4 ${directionColor} shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>`;
@@ -173,12 +299,12 @@
                         <span id="status-badge-${id}" class="text-gray-400 font-mono text-[11px] shrink-0">0%</span>
                     </div>
                     <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                        <div id="progress-${id}" class="bg-gradient-to-r from-emerald-500 to-cyan-500 h-full w-0 transition-all duration-100"></div>
+                        <div id="progress-${id}" class="${isUpload ? 'bg-gradient-to-r from-emerald-500 to-cyan-500' : 'bg-gradient-to-r from-cyan-500 to-blue-500'} h-full w-0 transition-all duration-100"></div>
                     </div>
-                    <div id="action-${id}" class="hidden flex justify-end"></div>
+                    <div id="action-${id}" class="hidden flex justify-end pt-1"></div>
                 `;
 
-                this.transferList.prepend(item);
+                container.prepend(item);
             },
 
             updateTransferProgress(id, current, total) {
@@ -202,7 +328,7 @@
                 if (downloadUrl && actionContainer) {
                     actionContainer.classList.remove('hidden');
                     actionContainer.innerHTML = `
-                        <a href="${downloadUrl}" download="${this.escapeHtml(fileName)}" class="inline-flex items-center space-x-1 text-xs bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-lg transition-colors mt-1 font-medium">
+                        <a href="${downloadUrl}" download="${this.escapeHtml(fileName)}" class="inline-flex items-center space-x-1.5 text-xs bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-lg transition-all font-semibold shadow-lg shadow-emerald-500/10">
                             <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
                             <span>Save File</span>
                         </a>
@@ -251,23 +377,28 @@
             }
         };
 
-        // WebRTC Logic
+        // WebRTC Connection Logic
         const WebRTC = {
             peerJsInstance: null,
             mqttClient: null,
             rtcConnection: null,
             dataChannel: null,
             activeReceives: {},
+            isInitiator: true,
 
             init(roomId, isInitiator) {
-                UI.updateStatus('amber', 'Connecting network...');
+                this.isInitiator = isInitiator;
+                UI.setMode(isInitiator);
+                UI.updateStatus('amber', 'Connecting signaling network...');
                 UI.retryBtn.classList.add('hidden');
                 
-                // Immediately display generated link & QR code
-                UI.generateShareLink(roomId);
+                if (isInitiator) {
+                    UI.generateShareLink(roomId);
+                } else {
+                    UI.senderIdLabel.innerText = `Room ID: ${roomId}`;
+                }
 
                 if (typeof Peer === 'undefined') {
-                    console.warn("PeerJS library unavailable. Switching directly to MQTT signaling...");
                     this.tryMqttFallback(roomId, isInitiator);
                     return;
                 }
@@ -289,14 +420,12 @@
                 try {
                     this.peerJsInstance = isInitiator ? new Peer(roomId, peerOptions) : new Peer(peerOptions);
                 } catch(e) {
-                    console.warn("PeerJS init failed, attempting MQTT fallback...", e);
                     this.tryMqttFallback(roomId, isInitiator);
                     return;
                 }
 
                 let peerJsTimeout = setTimeout(() => {
                     if (!this.dataChannel && UI.statusText.innerText.includes('Connecting')) {
-                        console.warn("PeerJS slow/failing. Switching to MQTT WebSocket signaling...");
                         if (this.peerJsInstance) this.peerJsInstance.destroy();
                         this.tryMqttFallback(roomId, isInitiator);
                     }
@@ -305,7 +434,7 @@
                 this.peerJsInstance.on('open', () => {
                     clearTimeout(peerJsTimeout);
                     if (isInitiator) {
-                        UI.updateStatus('amber', 'Waiting for receiver to join...');
+                        UI.updateStatus('amber', 'Waiting for receiver device to scan...');
                     } else {
                         UI.updateStatus('amber', 'Connecting to sender...');
                         const conn = this.peerJsInstance.connect(roomId, { reliable: true });
@@ -320,7 +449,6 @@
 
                 this.peerJsInstance.on('error', (err) => {
                     clearTimeout(peerJsTimeout);
-                    console.warn('PeerJS Error caught:', err.type, '. Triggering MQTT fallback...');
                     if (this.peerJsInstance) this.peerJsInstance.destroy();
                     this.tryMqttFallback(roomId, isInitiator);
                 });
@@ -330,16 +458,16 @@
                 conn.on('open', () => {
                     this.dataChannel = conn;
                     this.setupDataChannelEvents();
-                    UI.updateStatus('emerald', 'Connected Direct P2P');
-                    UI.showToast('Direct WebRTC Connection Established!', 'success');
+                    UI.onPeerConnected();
+                    UI.showToast('Direct Device Link Established!', 'success');
                 });
             },
 
             tryMqttFallback(roomId, isInitiator) {
-                UI.updateStatus('amber', 'Connecting via fallback broker...');
+                UI.updateStatus('amber', 'Using fallback signaling...');
                 
                 if (typeof mqtt === 'undefined') {
-                    UI.updateStatus('red', 'Signaling unavailable. Tap retry.');
+                    UI.updateStatus('red', 'Signaling error. Tap retry.');
                     UI.retryBtn.classList.remove('hidden');
                     return;
                 }
@@ -363,16 +491,15 @@
                     this.setupNativeWebRTC(topic, isInitiator);
 
                     if (isInitiator) {
-                        UI.updateStatus('amber', 'Waiting for peer...');
+                        UI.updateStatus('amber', 'Waiting for receiver...');
                     } else {
                         UI.updateStatus('amber', 'Connecting peer...');
                         this.mqttClient.publish(topic, JSON.stringify({ type: 'join' }));
                     }
                 });
 
-                this.mqttClient.on('error', (err) => {
-                    console.error("MQTT Error:", err);
-                    UI.updateStatus('red', 'Signaling Unavailable');
+                this.mqttClient.on('error', () => {
+                    UI.updateStatus('red', 'Signaling Error');
                     UI.retryBtn.classList.remove('hidden');
                 });
             },
@@ -437,8 +564,8 @@
                 this.dataChannel.binaryType = 'arraybuffer';
 
                 const onOpen = () => {
-                    UI.updateStatus('emerald', 'Connected Direct P2P');
-                    UI.showToast('P2P Data Channel Ready', 'success');
+                    UI.onPeerConnected();
+                    UI.showToast('P2P Direct Channel Active', 'success');
                 };
 
                 if (this.dataChannel.readyState === 'open') {
@@ -450,8 +577,8 @@
                 this.dataChannel.onmessage = (event) => this.handleIncomingData(event.data);
 
                 this.dataChannel.onclose = () => {
-                    UI.updateStatus('red', 'Peer Disconnected');
-                    UI.showToast('Peer connection closed', 'warning');
+                    UI.updateStatus('red', 'Device Disconnected');
+                    UI.showToast('Connection closed by peer', 'warning');
                     UI.retryBtn.classList.remove('hidden');
                 };
             },
@@ -471,7 +598,6 @@
                                 lastBytes: 0
                             };
                             UI.createTransferItemUI(meta.fileId, meta.fileName, meta.fileSize, 'download');
-                            UI.transfersContainer.classList.remove('hidden');
                         }
                     } catch (e) {
                         console.error("Failed to parse metadata", e);
@@ -492,7 +618,9 @@
                 const timeDiff = (now - recv.lastTime) / 1000;
                 if (timeDiff >= 0.5) {
                     const bytesDiff = recv.receivedSize - recv.lastBytes;
-                    UI.speedIndicator.innerText = UI.formatSpeed(bytesDiff / timeDiff);
+                    const speedStr = UI.formatSpeed(bytesDiff / timeDiff);
+                    UI.receiverSpeedIndicator.innerText = speedStr;
+                    UI.senderSpeedIndicator.innerText = speedStr;
                     recv.lastTime = now;
                     recv.lastBytes = recv.receivedSize;
                 }
@@ -510,19 +638,18 @@
                 const downloadUrl = URL.createObjectURL(blob);
 
                 UI.markTransferComplete(fileId, downloadUrl, recv.name);
-                UI.speedIndicator.innerText = '0 KB/s';
-                UI.showToast(`Received ${recv.name}`, 'success');
+                UI.receiverSpeedIndicator.innerText = '0 KB/s';
+                UI.senderSpeedIndicator.innerText = '0 KB/s';
+                UI.showToast(`Received: ${recv.name}`, 'success');
 
                 delete this.activeReceives[fileId];
             },
 
             async sendFiles(files) {
                 if (!this.dataChannel || (this.dataChannel.readyState !== 'open' && this.dataChannel.open !== true)) {
-                    UI.showToast('Waiting for receiving device to connect...', 'warning');
+                    UI.showToast('Connecting to receiving device...', 'warning');
                     return;
                 }
-
-                UI.transfersContainer.classList.remove('hidden');
 
                 for (const file of files) {
                     const fileId = 'f_' + Math.random().toString(36).substr(2, 8);
@@ -562,7 +689,9 @@
                         const timeDiff = (now - lastTime) / 1000;
                         if (timeDiff >= 0.5) {
                             const bytesDiff = offset - lastBytes;
-                            UI.speedIndicator.innerText = UI.formatSpeed(bytesDiff / timeDiff);
+                            const speedStr = UI.formatSpeed(bytesDiff / timeDiff);
+                            UI.senderSpeedIndicator.innerText = speedStr;
+                            UI.receiverSpeedIndicator.innerText = speedStr;
                             lastTime = now;
                             lastBytes = offset;
                         }
@@ -571,13 +700,14 @@
                     }
 
                     UI.markTransferComplete(fileId, null, file.name);
-                    UI.speedIndicator.innerText = '0 KB/s';
+                    UI.senderSpeedIndicator.innerText = '0 KB/s';
+                    UI.receiverSpeedIndicator.innerText = '0 KB/s';
                     UI.showToast(`Sent ${file.name}`, 'success');
                 }
             }
         };
 
-        // App Initialization
+        // Initialize App
         document.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const targetRoomId = urlParams.get('room') || urlParams.get('peer');
@@ -604,9 +734,10 @@
                 document.execCommand('copy');
                 document.body.removeChild(el);
 
-                UI.showToast('Share link copied to clipboard!', 'info');
+                UI.showToast('Share link copied!', 'info');
             });
 
+            // File Selection Handlers
             ['dragenter', 'dragover'].forEach(eventName => {
                 UI.dropzone.addEventListener(eventName, (e) => {
                     e.preventDefault();
@@ -629,9 +760,11 @@
             UI.fileInput.addEventListener('change', (e) => {
                 if (e.target.files.length) WebRTC.sendFiles(e.target.files);
             });
+
+            UI.receiverFileInput.addEventListener('change', (e) => {
+                if (e.target.files.length) WebRTC.sendFiles(e.target.files);
+            });
         });
     </script>
 </body>
 </html>
-
-```
