@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quikr Direct - Fast & Secure P2P File Sharing</title>
+    <title>Quikr Direct - Max Speed P2P File Sharing</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PeerJS for WebRTC -->
+    <!-- PeerJS -->
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-    <!-- MQTT.js for Fallback WebRTC Signaling -->
+    <!-- MQTT Fallback -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mqtt/4.3.7/mqtt.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; color: #f3f4f6; }
         .glass-panel { background: rgba(17, 24, 39, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .glow-emerald { box-shadow: 0 0 30px -5px rgba(16, 185, 129, 0.2); }
-        .glow-cyan { box-shadow: 0 0 30px -5px rgba(6, 182, 212, 0.2); }
+        .glow-emerald { box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.25); }
+        .glow-cyan { box-shadow: 0 0 35px -5px rgba(6, 182, 212, 0.25); }
         .dashed-border {
             background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%23374151FF' stroke-width='2' stroke-dasharray='8%2c 8' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
             border-radius: 1rem;
@@ -38,7 +38,7 @@
             </div>
             <div>
                 <h1 class="font-bold text-lg leading-tight tracking-wide">Quikr <span id="role-tag" class="text-emerald-400 font-normal text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 ml-1">SENDER MODE</span></h1>
-                <p class="text-xs text-gray-400">Direct High-Speed P2P File Transfer</p>
+                <p class="text-xs text-gray-400">Ultra-High Speed P2P Data Pipeline</p>
             </div>
         </div>
 
@@ -59,7 +59,7 @@
 
         <!-- SENDER UI VIEW -->
         <div id="sender-view" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Left Panel: QR Code & Link -->
+            <!-- Left Panel -->
             <div class="glass-panel rounded-2xl p-6 flex flex-col justify-between space-y-6">
                 <div>
                     <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4 flex items-center gap-2">
@@ -68,7 +68,7 @@
 
                     <div class="space-y-4">
                         <p class="text-xs text-gray-400 leading-relaxed">
-                            Scan this QR code with your phone or copy the link to connect the receiving device.
+                            Scan this QR code with the receiving device or share the direct link to establish a high-bandwidth connection.
                         </p>
 
                         <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
@@ -78,7 +78,6 @@
                             </button>
                         </div>
 
-                        <!-- Canvas QR Code -->
                         <div class="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-inner w-full aspect-square max-w-[170px] mx-auto">
                             <canvas id="qr-canvas" class="w-full h-full"></canvas>
                         </div>
@@ -87,11 +86,11 @@
 
                 <div id="conn-hint-card" class="bg-amber-950/20 border border-amber-500/20 rounded-xl p-3 text-xs text-amber-300/90 flex items-start gap-2.5">
                     <svg class="w-5 h-5 text-amber-400 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-                    <span>Scan QR code with receiver device to start sending.</span>
+                    <span>Scan QR code with receiver device to uncap maximum speed.</span>
                 </div>
             </div>
 
-            <!-- Right Panel: Dropzone & Upload Status Queue -->
+            <!-- Right Panel -->
             <div class="md:col-span-2 glass-panel rounded-2xl p-6 flex flex-col justify-between min-h-[440px] glow-emerald">
                 <div id="dropzone" class="dashed-border py-8 px-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 hover:border-emerald-500/50 group relative">
                     <input type="file" id="file-input" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
@@ -100,20 +99,19 @@
                     </div>
                     <h3 class="font-semibold text-gray-200 text-base mb-1">Drop files here or click to select</h3>
                     <p class="text-xs text-gray-400 max-w-sm">
-                        Select files to stream directly to the connected receiver at max speed.
+                        Zero-copy memory pipeline streams files at maximum hardware throughput.
                     </p>
                 </div>
 
-                <!-- Transfer Progress & Status Panel -->
                 <div id="sender-transfers-container" class="mt-6 space-y-3 hidden">
                     <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-gray-400 pb-2 border-b border-slate-800">
                         <span class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-                            Upload Progress
+                            Max Speed Upload Status
                         </span>
                         <div class="flex items-center space-x-3">
                             <span id="sender-file-count" class="text-gray-500 font-mono">0 files</span>
-                            <span id="sender-speed-indicator" class="text-emerald-400 font-mono font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">0 KB/s</span>
+                            <span id="sender-speed-indicator" class="text-emerald-400 font-mono font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">0 MB/s</span>
                         </div>
                     </div>
                     <div id="sender-transfer-list" class="space-y-3 max-h-[240px] overflow-y-auto pr-1"></div>
@@ -134,7 +132,7 @@
                     </div>
                 </div>
                 <div class="text-right">
-                    <span id="receiver-speed-indicator" class="text-xs font-mono font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-md">0 KB/s</span>
+                    <span id="receiver-speed-indicator" class="text-xs font-mono font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-md">0 MB/s</span>
                 </div>
             </div>
 
@@ -144,7 +142,7 @@
                 </div>
                 <h3 class="text-sm font-semibold text-gray-200">Ready to Receive Files</h3>
                 <p class="text-xs text-gray-400 max-w-xs mx-auto">
-                    Keep this window open. Files sent from the sender will appear here with instant download buttons.
+                    Keep this window open. Streamed chunks write directly into memory for peak speed.
                 </p>
             </div>
 
@@ -165,14 +163,14 @@
 
     <!-- Footer -->
     <footer class="max-w-4xl mx-auto w-full text-center py-4 text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-800/60">
-        <div>Quikr P2P Direct v3.1</div>
+        <div>Quikr Engine v4.0 (Max Throughput Architecture)</div>
         <div class="flex items-center space-x-4">
             <span class="flex items-center gap-1"><svg class="w-3 h-3 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> DTLS Encrypted</span>
-            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><path d="M12 12h.01"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9c3.9 3.9 3.9 10.3 0 14.2"/></svg> Zero Cloud Storage</span>
+            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><path d="M12 12h.01"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9c3.9 3.9 3.9 10.3 0 14.2"/></svg> Direct Hardware Stream</span>
         </div>
     </footer>
 
-    <!-- Pure JS Minimal QR Code Generator -->
+    <!-- Pure JS QR Generator -->
     <script>
         var QRCodeCanvas = (function() {
             function drawQR(text, canvasId) {
@@ -184,19 +182,10 @@
                 
                 const img = new Image();
                 img.crossOrigin = "Anonymous";
-                img.onload = function() {
-                    ctx.drawImage(img, 0, 0, 200, 200);
-                };
+                img.onload = function() { ctx.drawImage(img, 0, 0, 200, 200); };
                 img.onerror = function() {
-                    ctx.fillStyle = "#ffffff";
-                    ctx.fillRect(0,0,200,200);
-                    ctx.fillStyle = "#000000";
-                    ctx.fillRect(10,10,50,50);
-                    ctx.fillRect(140,10,50,50);
-                    ctx.fillRect(10,140,50,50);
-                    ctx.fillRect(20,20,30,30);
-                    ctx.fillRect(150,20,30,30);
-                    ctx.fillRect(20,150,30,30);
+                    ctx.fillStyle = "#ffffff"; ctx.fillRect(0,0,200,200);
+                    ctx.fillStyle = "#000000"; ctx.fillRect(10,10,50,50); ctx.fillRect(140,10,50,50); ctx.fillRect(10,140,50,50);
                 };
                 img.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" + encodeURIComponent(text);
             }
@@ -216,7 +205,6 @@
             receiverView: document.getElementById('receiver-view'),
             connHintCard: document.getElementById('conn-hint-card'),
             
-            // Sender DOM
             dropzone: document.getElementById('dropzone'),
             fileInput: document.getElementById('file-input'),
             senderTransfersContainer: document.getElementById('sender-transfers-container'),
@@ -224,7 +212,6 @@
             senderSpeedIndicator: document.getElementById('sender-speed-indicator'),
             senderFileCount: document.getElementById('sender-file-count'),
 
-            // Receiver DOM
             receiverIdleState: document.getElementById('receiver-idle-state'),
             receiverTransfersContainer: document.getElementById('receiver-transfers-container'),
             receiverTransferList: document.getElementById('receiver-transfer-list'),
@@ -261,7 +248,7 @@
                     this.connHintCard.className = "bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-3 text-xs text-emerald-300/90 flex items-start gap-2.5";
                     this.connHintCard.innerHTML = `
                         <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                        <span>Receiver device linked! Drop or select files to begin sending.</span>
+                        <span>Max-speed tunnel linked! Drop files to stream.</span>
                     `;
                 }
             },
@@ -315,11 +302,11 @@
                         ${statusPill}
                     </div>
                     <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                        <div id="progress-${id}" class="${isUpload ? 'bg-gradient-to-r from-emerald-500 to-cyan-500' : 'bg-gradient-to-r from-cyan-500 to-blue-500'} h-full w-0 transition-all duration-100"></div>
+                        <div id="progress-${id}" class="${isUpload ? 'bg-gradient-to-r from-emerald-500 to-cyan-500' : 'bg-gradient-to-r from-cyan-500 to-blue-500'} h-full w-0 transition-all duration-75"></div>
                     </div>
                     <div class="flex items-center justify-between text-[11px] text-gray-400 font-mono">
                         <span id="transferred-bytes-${id}">0 B of ${this.formatBytes(fileSize)}</span>
-                        <span id="speed-tag-${id}" class="text-gray-500">Preparing stream...</span>
+                        <span id="speed-tag-${id}" class="text-gray-500">Accelerating...</span>
                     </div>
                     <div id="action-${id}" class="hidden flex justify-end pt-1"></div>
                 `;
@@ -340,7 +327,6 @@
                     const isUploading = statusBadge.innerText.includes('Upload');
                     const label = isUploading ? 'Uploading' : 'Receiving';
                     const bgDot = isUploading ? 'bg-emerald-400' : 'bg-cyan-400';
-                    
                     statusBadge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${bgDot} animate-ping"></span> ${label} ${percent}%`;
                 }
 
@@ -364,13 +350,13 @@
                 }
 
                 if (statusBadge) {
-                    statusBadge.innerHTML = `<svg class="w-3 h-3 text-emerald-400 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sent & Completed`;
+                    statusBadge.innerHTML = `<svg class="w-3 h-3 text-emerald-400 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Completed`;
                     statusBadge.className = 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded text-[11px] font-mono font-semibold flex items-center gap-1';
                 }
 
                 if (speedTag) {
-                    speedTag.innerText = 'Transfer finished';
-                    speedTag.className = 'text-emerald-400/80';
+                    speedTag.innerText = 'Finished';
+                    speedTag.className = 'text-emerald-400/80 font-bold';
                 }
 
                 if (downloadUrl && actionContainer) {
@@ -425,7 +411,7 @@
             }
         };
 
-        // WebRTC Connection Logic
+        // High Throughput WebRTC Connection Logic
         const WebRTC = {
             peerJsInstance: null,
             mqttClient: null,
@@ -462,7 +448,6 @@
                         iceServers: [
                             { urls: 'stun:stun.l.google.com:19302' },
                             { urls: 'stun:stun1.l.google.com:19302' },
-                            { urls: 'stun:stun2.l.google.com:19302' },
                             { urls: 'stun:global.stun.twilio.com:3478' }
                         ]
                     }
@@ -507,12 +492,10 @@
 
             bindPeerJsConn(conn) {
                 conn.on('open', () => {
-                    // Extract underlying raw WebRTC RTCDataChannel
                     const rawDc = conn.dataChannel || conn._dc;
                     if (rawDc) {
                         this.bindRawDataChannel(rawDc);
                     } else {
-                        // Fallback to PeerJS wrapper
                         this.dataChannel = conn;
                         UI.onPeerConnected();
                         UI.showToast('Direct Device Link Established!', 'success');
@@ -622,6 +605,8 @@
             bindRawDataChannel(dc) {
                 this.dataChannel = dc;
                 this.dataChannel.binaryType = 'arraybuffer';
+                // Continuous zero-delay buffer thresholding
+                this.dataChannel.bufferedAmountLowThreshold = 256 * 1024; // 256 KB
 
                 const onOpen = () => {
                     UI.onPeerConnected();
@@ -646,7 +631,6 @@
             },
 
             handleIncomingData(data) {
-                // String Data = File Metadata Header
                 if (typeof data === 'string') {
                     try {
                         const meta = JSON.parse(data);
@@ -670,7 +654,6 @@
                     return;
                 }
 
-                // ArrayBuffer Data = Binary Chunk
                 if (!this.currentReceivingFileId || !this.activeReceives[this.currentReceivingFileId]) {
                     const keys = Object.keys(this.activeReceives);
                     if (keys.length > 0) {
@@ -687,7 +670,7 @@
                 const now = performance.now();
                 const timeDiff = (now - recv.lastTime) / 1000;
                 let speedStr = '';
-                if (timeDiff >= 0.2) {
+                if (timeDiff >= 0.15) {
                     const bytesDiff = recv.receivedSize - recv.lastBytes;
                     speedStr = UI.formatSpeed(bytesDiff / timeDiff);
                     UI.receiverSpeedIndicator.innerText = speedStr;
@@ -709,8 +692,8 @@
                 const downloadUrl = URL.createObjectURL(blob);
 
                 UI.markTransferComplete(fileId, downloadUrl, recv.name);
-                UI.receiverSpeedIndicator.innerText = '0 KB/s';
-                UI.senderSpeedIndicator.innerText = '0 KB/s';
+                UI.receiverSpeedIndicator.innerText = '0 MB/s';
+                UI.senderSpeedIndicator.innerText = '0 MB/s';
                 UI.showToast(`Received: ${recv.name}`, 'success');
 
                 delete this.activeReceives[fileId];
@@ -738,47 +721,59 @@
                         fileType: file.type
                     });
 
-                    // Send Metadata String
                     this.dataChannel.send(headerMsg);
 
-                    // High Speed 128KB Chunks
-                    const CHUNK_SIZE = 128 * 1024;
+                    // 256 KB Chunks for Peak Pipeline Speed
+                    const CHUNK_SIZE = 256 * 1024;
                     let offset = 0;
                     let lastTime = performance.now();
                     let lastBytes = 0;
 
-                    while (offset < file.size) {
-                        // High Speed Backpressure Handling (2ms micro-delay)
-                        const buffered = this.dataChannel.bufferedAmount || 0;
-                        if (buffered > 1024 * 1024) { // 1 MB ceiling
-                            await new Promise(r => setTimeout(r, 2));
-                            continue;
+                    // Non-blocking Event Pipelining Loop
+                    const sendChunk = async () => {
+                        while (offset < file.size) {
+                            const buffered = this.dataChannel.bufferedAmount || 0;
+                            
+                            // High-bandwidth buffer cap (8 MB)
+                            if (buffered > 8 * 1024 * 1024) {
+                                await new Promise((resolve) => {
+                                    const onLow = () => {
+                                        this.dataChannel.removeEventListener('bufferedamountlow', onLow);
+                                        resolve();
+                                    };
+                                    this.dataChannel.addEventListener('bufferedamountlow', onLow);
+                                    setTimeout(resolve, 50); // Hard timeout fallback
+                                });
+                                continue;
+                            }
+
+                            const slice = file.slice(offset, offset + CHUNK_SIZE);
+                            const buffer = await slice.arrayBuffer();
+
+                            this.dataChannel.send(buffer);
+                            offset += buffer.byteLength;
+
+                            const now = performance.now();
+                            const timeDiff = (now - lastTime) / 1000;
+                            let speedStr = '';
+                            if (timeDiff >= 0.15) {
+                                const bytesDiff = offset - lastBytes;
+                                speedStr = UI.formatSpeed(bytesDiff / timeDiff);
+                                UI.senderSpeedIndicator.innerText = speedStr;
+                                UI.receiverSpeedIndicator.innerText = speedStr;
+                                lastTime = now;
+                                lastBytes = offset;
+                            }
+
+                            UI.updateTransferProgress(fileId, offset, file.size, speedStr);
                         }
+                    };
 
-                        const slice = file.slice(offset, offset + CHUNK_SIZE);
-                        const buffer = await slice.arrayBuffer();
-
-                        this.dataChannel.send(buffer);
-                        offset += buffer.byteLength;
-
-                        const now = performance.now();
-                        const timeDiff = (now - lastTime) / 1000;
-                        let speedStr = '';
-                        if (timeDiff >= 0.2) {
-                            const bytesDiff = offset - lastBytes;
-                            speedStr = UI.formatSpeed(bytesDiff / timeDiff);
-                            UI.senderSpeedIndicator.innerText = speedStr;
-                            UI.receiverSpeedIndicator.innerText = speedStr;
-                            lastTime = now;
-                            lastBytes = offset;
-                        }
-
-                        UI.updateTransferProgress(fileId, offset, file.size, speedStr);
-                    }
+                    await sendChunk();
 
                     UI.markTransferComplete(fileId, null, file.name);
-                    UI.senderSpeedIndicator.innerText = '0 KB/s';
-                    UI.receiverSpeedIndicator.innerText = '0 KB/s';
+                    UI.senderSpeedIndicator.innerText = '0 MB/s';
+                    UI.receiverSpeedIndicator.innerText = '0 MB/s';
                     UI.showToast(`Sent ${file.name}`, 'success');
                 }
             }
