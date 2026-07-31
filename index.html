@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quikr Direct - Max Throughput P2P Transfer</title>
+    <title>Quikr Direct - Direct Save P2P Transfer</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -38,7 +38,7 @@
             </div>
             <div>
                 <h1 class="font-bold text-lg leading-tight tracking-wide">Quikr <span id="role-tag" class="text-emerald-400 font-normal text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 ml-1">SENDER MODE</span></h1>
-                <p class="text-xs text-gray-400">Ultra-High Speed Local P2P Engine</p>
+                <p class="text-xs text-gray-400">Direct Device Storage Streaming</p>
             </div>
         </div>
 
@@ -67,7 +67,7 @@
 
                     <div class="space-y-4">
                         <p class="text-xs text-gray-400 leading-relaxed">
-                            Scan QR code with receiving device or copy link. Best speeds are achieved on a 5 GHz Wi-Fi / Hotspot.
+                            Scan QR code with receiving device. Received files auto-trigger download straight to device storage.
                         </p>
 
                         <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex items-center justify-between">
@@ -85,7 +85,7 @@
 
                 <div id="conn-hint-card" class="bg-amber-950/20 border border-amber-500/20 rounded-xl p-3 text-xs text-amber-300/90 flex items-start gap-2.5">
                     <svg class="w-5 h-5 text-amber-400 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-                    <span>Scan QR code with receiver to connect high-speed stream.</span>
+                    <span>Scan QR code with receiver device to start direct stream.</span>
                 </div>
             </div>
 
@@ -98,7 +98,7 @@
                     </div>
                     <h3 class="font-semibold text-gray-200 text-base mb-1">Drop files here or click to select</h3>
                     <p class="text-xs text-gray-400 max-w-sm">
-                        High-frequency 512KB chunk stream optimized for fast local transfers.
+                        Zero-cloud P2P stream delivers files directly to receiver device downloads.
                     </p>
                 </div>
 
@@ -106,7 +106,7 @@
                     <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-gray-400 pb-2 border-b border-slate-800">
                         <span class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-                            Upload Progress
+                            Upload Queue
                         </span>
                         <div class="flex items-center space-x-3">
                             <span id="sender-file-count" class="text-gray-500 font-mono">0 files</span>
@@ -141,7 +141,7 @@
                 </div>
                 <h3 class="text-sm font-semibold text-gray-200">Ready to Receive Files</h3>
                 <p class="text-xs text-gray-400 max-w-xs mx-auto">
-                    Keep this window open. Chunks stream continuously to maximize throughput.
+                    Keep this window open. When transfers finish, files will trigger directly into your device downloads.
                 </p>
             </div>
 
@@ -162,10 +162,10 @@
 
     <!-- Footer -->
     <footer class="max-w-4xl mx-auto w-full text-center py-4 text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-800/60">
-        <div>Quikr Engine v5.0 (Stream-Optimized)</div>
+        <div>Quikr Engine v5.2 (Auto-Save Active)</div>
         <div class="flex items-center space-x-4">
             <span class="flex items-center gap-1"><svg class="w-3 h-3 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> DTLS Encrypted</span>
-            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><path d="M12 12h.01"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9c3.9 3.9 3.9 10.3 0 14.2"/></svg> Direct Stream</span>
+            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><path d="M12 12h.01"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9c3.9 3.9 3.9 10.3 0 14.2"/></svg> Direct Save</span>
         </div>
     </footer>
 
@@ -305,7 +305,7 @@
                     </div>
                     <div class="flex items-center justify-between text-[11px] text-gray-400 font-mono">
                         <span id="transferred-bytes-${id}">0 B of ${this.formatBytes(fileSize)}</span>
-                        <span id="speed-tag-${id}" class="text-gray-500">Accelerating...</span>
+                        <span id="speed-tag-${id}" class="text-gray-500">Streaming...</span>
                     </div>
                     <div id="action-${id}" class="hidden flex justify-end pt-1"></div>
                 `;
@@ -338,7 +338,7 @@
                 }
             },
 
-            markTransferComplete(id, downloadUrl, fileName) {
+            markTransferComplete(id, downloadUrl, fileName, autoSaved = false) {
                 const statusBadge = document.getElementById(`status-badge-${id}`);
                 const actionContainer = document.getElementById(`action-${id}`);
                 const iconBox = document.getElementById(`icon-box-${id}`);
@@ -349,12 +349,12 @@
                 }
 
                 if (statusBadge) {
-                    statusBadge.innerHTML = `<svg class="w-3 h-3 text-emerald-400 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Completed`;
+                    statusBadge.innerHTML = `<svg class="w-3 h-3 text-emerald-400 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> ${autoSaved ? 'Saved to Device' : 'Completed'}`;
                     statusBadge.className = 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded text-[11px] font-mono font-semibold flex items-center gap-1';
                 }
 
                 if (speedTag) {
-                    speedTag.innerText = 'Finished';
+                    speedTag.innerText = autoSaved ? 'Auto-Saved' : 'Finished';
                     speedTag.className = 'text-emerald-400/80 font-bold';
                 }
 
@@ -363,7 +363,7 @@
                     actionContainer.innerHTML = `
                         <a href="${downloadUrl}" download="${this.escapeHtml(fileName)}" class="inline-flex items-center space-x-1.5 text-xs bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 px-3 py-1.5 rounded-lg transition-all font-semibold shadow-lg shadow-emerald-500/10">
                             <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                            <span>Save File</span>
+                            <span>Save Again</span>
                         </a>
                     `;
                 }
@@ -604,7 +604,7 @@
             bindRawDataChannel(dc) {
                 this.dataChannel = dc;
                 this.dataChannel.binaryType = 'arraybuffer';
-                this.dataChannel.bufferedAmountLowThreshold = 512 * 1024; // 512 KB Low Threshold
+                this.dataChannel.bufferedAmountLowThreshold = 512 * 1024;
 
                 const onOpen = () => {
                     UI.onPeerConnected();
@@ -689,10 +689,18 @@
                 const blob = new Blob(recv.chunks, { type: recv.mime || 'application/octet-stream' });
                 const downloadUrl = URL.createObjectURL(blob);
 
-                UI.markTransferComplete(fileId, downloadUrl, recv.name);
+                // Direct Save Trigger into Device Storage
+                const tempLink = document.createElement('a');
+                tempLink.href = downloadUrl;
+                tempLink.download = recv.name;
+                document.body.appendChild(tempLink);
+                tempLink.click();
+                document.body.removeChild(tempLink);
+
+                UI.markTransferComplete(fileId, downloadUrl, recv.name, true);
                 UI.receiverSpeedIndicator.innerText = '0 MB/s';
                 UI.senderSpeedIndicator.innerText = '0 MB/s';
-                UI.showToast(`Received: ${recv.name}`, 'success');
+                UI.showToast(`Saved to device: ${recv.name}`, 'success');
 
                 delete this.activeReceives[fileId];
                 if (this.currentReceivingFileId === fileId) {
@@ -721,7 +729,6 @@
 
                     this.dataChannel.send(headerMsg);
 
-                    // Max Throughput 512 KB Chunking
                     const CHUNK_SIZE = 512 * 1024;
                     let offset = 0;
                     let lastTime = performance.now();
@@ -731,7 +738,7 @@
                         while (offset < file.size) {
                             const buffered = this.dataChannel.bufferedAmount || 0;
                             
-                            if (buffered > 16 * 1024 * 1024) { // 16 MB Buffer Ceiling
+                            if (buffered > 16 * 1024 * 1024) {
                                 await new Promise((resolve) => {
                                     const onLow = () => {
                                         this.dataChannel.removeEventListener('bufferedamountlow', onLow);
@@ -767,7 +774,7 @@
 
                     await sendChunk();
 
-                    UI.markTransferComplete(fileId, null, file.name);
+                    UI.markTransferComplete(fileId, null, file.name, false);
                     UI.senderSpeedIndicator.innerText = '0 MB/s';
                     UI.receiverSpeedIndicator.innerText = '0 MB/s';
                     UI.showToast(`Sent ${file.name}`, 'success');
