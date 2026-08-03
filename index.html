@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,9 +40,9 @@
                 <h1 class="font-bold text-lg leading-tight tracking-wide flex items-center gap-2">
                     Quikr 
                     <span id="role-tag" class="text-emerald-400 font-normal text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">SENDER MODE</span>
-                    <span class="text-rose-400 font-bold text-[10px] px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 uppercase tracking-widest hidden sm:flex items-center gap-1">
+                    <span class="text-fuchsia-400 font-bold text-[10px] px-1.5 py-0.5 rounded bg-fuchsia-500/10 border border-fuchsia-500/20 uppercase tracking-widest hidden sm:flex items-center gap-1 shadow-[0_0_10px_rgba(232,121,249,0.3)]">
                         <svg class="w-3 h-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                        Extreme Speed
+                        Gigabit Turbo
                     </span>
                 </h1>
                 <p class="text-xs text-gray-400">Direct Device Storage Streaming</p>
@@ -106,7 +105,7 @@
                     </div>
                     <h3 class="font-semibold text-gray-200 text-base mb-1">Drop files here or click to select</h3>
                     <p class="text-xs text-gray-400 max-w-sm">
-                        Zero-cloud P2P stream delivers files directly to receiver device downloads. Unlimited file size, UI unblocked.
+                        Zero-cloud P2P stream delivers files directly to receiver device downloads. Unlimited file size, Gigabit speed.
                     </p>
                 </div>
 
@@ -118,7 +117,7 @@
                         </span>
                         <div class="flex items-center space-x-3">
                             <span id="sender-file-count" class="text-gray-500 font-mono">0 files</span>
-                            <span id="sender-speed-indicator" class="text-emerald-400 font-mono font-bold bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md shadow-[0_0_10px_rgba(16,185,129,0.3)]">0 MB/s</span>
+                            <span id="sender-speed-indicator" class="text-fuchsia-400 font-mono font-bold bg-fuchsia-500/10 border border-fuchsia-500/30 px-2 py-0.5 rounded-md shadow-[0_0_10px_rgba(232,121,249,0.3)] transition-all">0 MB/s</span>
                         </div>
                     </div>
                     <div id="sender-transfer-list" class="space-y-3 max-h-[240px] overflow-y-auto pr-1"></div>
@@ -139,8 +138,8 @@
                     </div>
                 </div>
                 <div class="text-right flex flex-col items-end gap-1">
-                    <span id="receiver-speed-indicator" class="text-xs font-mono font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-md shadow-[0_0_10px_rgba(6,182,212,0.3)]">0 MB/s</span>
-                    <span id="opfs-indicator" class="text-[10px] text-gray-500 hidden items-center gap-1"><svg class="w-3 h-3 text-emerald-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Direct-to-Disk Stream</span>
+                    <span id="receiver-speed-indicator" class="text-xs font-mono font-bold text-fuchsia-400 bg-fuchsia-500/10 border border-fuchsia-500/30 px-2 py-0.5 rounded-md shadow-[0_0_10px_rgba(232,121,249,0.3)] transition-all">0 MB/s</span>
+                    <span id="opfs-indicator" class="text-[10px] text-gray-500 hidden items-center gap-1"><svg class="w-3 h-3 text-emerald-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Batched Disk Writes Active</span>
                 </div>
             </div>
 
@@ -171,10 +170,10 @@
 
     <!-- Footer -->
     <footer class="max-w-4xl mx-auto w-full text-center py-4 text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-800/60">
-        <div>Quikr Engine v8.0 (Unblocked UI + SCTP Optimized)</div>
+        <div>Quikr Engine v9.0 (Gigabit Turbo)</div>
         <div class="flex items-center space-x-4">
-            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-rose-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> 64KB SCTP Chunks</span>
-            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><path d="M12 12h.01"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9c3.9 3.9 3.9 10.3 0 14.2"/></svg> Unblocked Disk I/O</span>
+            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-fuchsia-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Zero-Copy Network I/O</span>
+            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><path d="M12 12h.01"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9c3.9 3.9 3.9 10.3 0 14.2"/></svg> 8MB Batched Disk Writes</span>
         </div>
     </footer>
 
@@ -257,7 +256,7 @@
                     this.connHintCard.className = "bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-3 text-xs text-emerald-300/90 flex items-start gap-2.5";
                     this.connHintCard.innerHTML = `
                         <svg class="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                        <span>Receiver linked! Ready to stream files at local network speeds.</span>
+                        <span>Receiver linked! Ready to stream files at true local network speeds.</span>
                     `;
                 }
             },
@@ -614,13 +613,13 @@
                 this.dataChannel = dc;
                 this.dataChannel.binaryType = 'arraybuffer';
                 
-                // BACKPRESSURE THRESHOLD:
-                // 1MB threshold keeps latency low and flow consistent.
-                this.dataChannel.bufferedAmountLowThreshold = 1024 * 1024; 
+                // MASSIVE BUFFER OPTIMIZATION:
+                // Prevents network from stalling out. Refill when it drops below 4MB.
+                this.dataChannel.bufferedAmountLowThreshold = 1024 * 1024 * 4; 
 
                 const onOpen = () => {
                     UI.onPeerConnected();
-                    UI.showToast('Extreme Throughput P2P Channel Active', 'success');
+                    UI.showToast('Gigabit P2P Channel Active', 'success');
                 };
 
                 if (this.dataChannel.readyState === 'open') {
@@ -667,13 +666,10 @@
             },
 
             async handleIncomingData(data) {
-                // Handle JSON Metadata Header
                 if (typeof data === 'string') {
                     try {
                         const meta = JSON.parse(data);
                         if (meta.type === 'file-header') {
-                            
-                            // 1. Setup Direct-to-Disk Stream (OPFS)
                             const canUseOPFS = !!(navigator.storage && navigator.storage.getDirectory);
                             let fileHandle = null, writable = null;
 
@@ -690,7 +686,6 @@
                                 }
                             }
 
-                            // 2. Initialize Receiver Object
                             this.activeReceives[meta.fileId] = {
                                 fileId: meta.fileId,
                                 name: meta.fileName,
@@ -701,7 +696,10 @@
                                 useOPFS: !!writable,
                                 fileHandle: fileHandle,
                                 writable: writable,
-                                chunks: [],
+                                
+                                // Batching mechanisms
+                                batchBuffer: [],
+                                batchSize: 0,
                                 writeQueue: Promise.resolve(), 
                                 
                                 lastTime: performance.now(),
@@ -718,18 +716,28 @@
                     return;
                 }
 
-                // Handle Incoming Binary File Chunks
                 if (!this.currentReceivingFileId) return;
                 const recv = this.activeReceives[this.currentReceivingFileId];
 
-                // **PURE DATA PROCESSING** - No DOM updates here to unblock the main thread!
-                if (recv.useOPFS) {
-                    recv.writeQueue = recv.writeQueue.then(() => recv.writable.write(data));
-                } else {
-                    recv.chunks.push(data);
-                }
-                
+                // BATCHED DISK I/O: Hold chunks in memory until 8MB is reached
+                recv.batchBuffer.push(data);
+                recv.batchSize += data.byteLength;
                 recv.receivedSize += data.byteLength;
+
+                // Write to disk every 8MB OR if file is complete
+                if (recv.batchSize >= 1024 * 1024 * 8 || recv.receivedSize >= recv.size) {
+                    const blobToWrite = new Blob(recv.batchBuffer);
+                    recv.batchBuffer = [];
+                    recv.batchSize = 0;
+
+                    if (recv.useOPFS) {
+                        recv.writeQueue = recv.writeQueue.then(() => recv.writable.write(blobToWrite));
+                    } else {
+                        // Fallback: If no OPFS, keep massive blob array in memory
+                        if (!recv.chunks) recv.chunks = [];
+                        recv.chunks.push(blobToWrite);
+                    }
+                }
 
                 if (recv.receivedSize >= recv.size) {
                     this.finalizeReceivedFile(recv.fileId);
@@ -745,11 +753,11 @@
                     if (this.receiverUiTimer) clearInterval(this.receiverUiTimer);
                 }
 
-                // Force one last UI update to show 100%
-                UI.updateTransferProgress(recv.fileId, recv.size, recv.size, 'Finalizing...');
+                UI.updateTransferProgress(recv.fileId, recv.size, recv.size, 'Finalizing I/O...');
 
                 let downloadUrl;
                 if (recv.useOPFS) {
+                    // Wait for all batched background disk writes to finish
                     await recv.writeQueue; 
                     await recv.writable.close();
                     const file = await recv.fileHandle.getFile();
@@ -790,11 +798,10 @@
                     return;
                 }
 
-                // CHUNK OPTIMIZATION:
-                // Reverted back to 64KB. This prevents SCTP fragmentation at the network layer 
-                // which causes massive CPU overhead and dropped packets during high-speed flows.
-                const CHUNK_SIZE = 64 * 1024; 
-                const MAX_BUFFER = 2 * 1024 * 1024; // Limit internal queue to 2MB to keep latency low
+                // GIGABIT ARCHITECTURE CONSTANTS:
+                const CHUNK_SIZE = 65535; // Max safe SCTP network slice
+                const DISK_READ_SIZE = 1024 * 1024 * 8; // Massive 8MB Disk Read
+                const MAX_BUFFER = 1024 * 1024 * 16; // 16MB Network Backpressure Limit
 
                 for (const file of files) {
                     const fileId = 'f_' + Math.random().toString(36).substr(2, 8);
@@ -812,7 +819,7 @@
                     let lastTime = performance.now();
                     let lastBytes = 0;
 
-                    // UI UNBLOCKING: Separate thread for sender DOM updates
+                    // UI Updates
                     const senderUiTimer = setInterval(() => {
                         const now = performance.now();
                         const timeDiff = (now - lastTime) / 1000;
@@ -827,18 +834,28 @@
                         }
                     }, 250);
 
-                    // High-speed pump loop
+                    // ZERO-COPY DATA PUMP
                     while (offset < file.size) {
+                        
+                        // 1. Check Network Backpressure
                         if (this.dataChannel.bufferedAmount > MAX_BUFFER) {
                             await new Promise((resolve) => {
                                 this.dataChannel.addEventListener('bufferedamountlow', resolve, { once: true });
                             });
                         }
 
-                        // We can read and send simply because 64KB array buffers are extremely fast
-                        const buffer = await file.slice(offset, offset + CHUNK_SIZE).arrayBuffer();
-                        this.dataChannel.send(buffer);
-                        offset += buffer.byteLength;
+                        // 2. Read huge 8MB chunk into memory
+                        const readEnd = Math.min(offset + DISK_READ_SIZE, file.size);
+                        const largeDiskChunk = await file.slice(offset, readEnd).arrayBuffer();
+
+                        // 3. Zero-Copy slicing. Send small chunks instantly without copying memory.
+                        for (let i = 0; i < largeDiskChunk.byteLength; i += CHUNK_SIZE) {
+                            const sliceLen = Math.min(CHUNK_SIZE, largeDiskChunk.byteLength - i);
+                            // Uint8Array creates a "view" of the memory instead of copying it
+                            this.dataChannel.send(new Uint8Array(largeDiskChunk, i, sliceLen)); 
+                        }
+
+                        offset += largeDiskChunk.byteLength;
                     }
 
                     clearInterval(senderUiTimer);
