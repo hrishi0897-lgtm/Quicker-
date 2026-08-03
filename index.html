@@ -98,7 +98,7 @@
                     </div>
                     <h3 class="font-semibold text-gray-200 text-base mb-1">Drop files here or click to select</h3>
                     <p class="text-xs text-gray-400 max-w-sm">
-                        Zero-cloud P2P stream delivers files directly to receiver device downloads.
+                        Zero-cloud P2P stream delivers files directly to receiver device downloads. Unlimited file size.
                     </p>
                 </div>
 
@@ -130,8 +130,9 @@
                         <p id="sender-id-label" class="text-xs text-cyan-400 font-mono">Connected to Sender</p>
                     </div>
                 </div>
-                <div class="text-right">
+                <div class="text-right flex flex-col items-end gap-1">
                     <span id="receiver-speed-indicator" class="text-xs font-mono font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-md">0 MB/s</span>
+                    <span id="opfs-indicator" class="text-[10px] text-gray-500 hidden items-center gap-1"><svg class="w-3 h-3 text-emerald-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Disk Stream Active</span>
                 </div>
             </div>
 
@@ -162,10 +163,10 @@
 
     <!-- Footer -->
     <footer class="max-w-4xl mx-auto w-full text-center py-4 text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-2 border-t border-slate-800/60">
-        <div>Quikr Engine v5.2 (Auto-Save Active)</div>
+        <div>Quikr Engine v6.0 (High-Speed + Large Files)</div>
         <div class="flex items-center space-x-4">
             <span class="flex items-center gap-1"><svg class="w-3 h-3 text-emerald-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> DTLS Encrypted</span>
-            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><path d="M12 12h.01"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9c3.9 3.9 3.9 10.3 0 14.2"/></svg> Direct Save</span>
+            <span class="flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><path d="M12 12h.01"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9c3.9 3.9 3.9 10.3 0 14.2"/></svg> OPFS Disk Stream</span>
         </div>
     </footer>
 
@@ -218,6 +219,7 @@
             receiverFileInput: document.getElementById('receiver-file-input'),
             senderIdLabel: document.getElementById('sender-id-label'),
             toastContainer: document.getElementById('toast-container'),
+            opfsIndicator: document.getElementById('opfs-indicator'),
 
             totalSenderFiles: 0,
 
@@ -446,8 +448,7 @@
                     config: {
                         iceServers: [
                             { urls: 'stun:stun.l.google.com:19302' },
-                            { urls: 'stun:stun1.l.google.com:19302' },
-                            { urls: 'stun:global.stun.twilio.com:3478' }
+                            { urls: 'stun:stun1.l.google.com:19302' }
                         ]
                     }
                 };
@@ -552,8 +553,7 @@
                 const config = {
                     iceServers: [
                         { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:stun1.l.google.com:19302' },
-                        { urls: 'stun:global.stun.twilio.com:3478' }
+                        { urls: 'stun:stun1.l.google.com:19302' }
                     ]
                 };
 
@@ -604,7 +604,8 @@
             bindRawDataChannel(dc) {
                 this.dataChannel = dc;
                 this.dataChannel.binaryType = 'arraybuffer';
-                this.dataChannel.bufferedAmountLowThreshold = 512 * 1024;
+                // Trigger buffer low events when buffer hits 1MB
+                this.dataChannel.bufferedAmountLowThreshold = 1024 * 1024;
 
                 const onOpen = () => {
                     UI.onPeerConnected();
@@ -628,21 +629,49 @@
                 };
             },
 
-            handleIncomingData(data) {
+            async handleIncomingData(data) {
+                // Handle JSON Metadata Header
                 if (typeof data === 'string') {
                     try {
                         const meta = JSON.parse(data);
                         if (meta.type === 'file-header') {
+                            
+                            // 1. Setup Direct-to-Disk Stream (OPFS) if supported
+                            const canUseOPFS = !!(navigator.storage && navigator.storage.getDirectory);
+                            let fileHandle = null, writable = null;
+
+                            if (canUseOPFS) {
+                                try {
+                                    const dir = await navigator.storage.getDirectory();
+                                    fileHandle = await dir.getFileHandle(meta.fileId, { create: true });
+                                    writable = await fileHandle.createWritable();
+                                    UI.opfsIndicator.classList.remove('hidden');
+                                    UI.opfsIndicator.classList.add('flex');
+                                } catch (err) {
+                                    console.warn("OPFS Disk Stream disabled, falling back to RAM.", err);
+                                    writable = null; 
+                                }
+                            }
+
+                            // 2. Initialize Receiver Object
                             this.activeReceives[meta.fileId] = {
                                 fileId: meta.fileId,
                                 name: meta.fileName,
                                 size: meta.fileSize,
                                 mime: meta.fileType,
                                 receivedSize: 0,
-                                chunks: [],
+                                
+                                // Storage mechanisms
+                                useOPFS: !!writable,
+                                fileHandle: fileHandle,
+                                writable: writable,
+                                chunks: [], // Fallback for browsers without OPFS
+                                writeQueue: Promise.resolve(), // Prevents race conditions writing to disk
+                                
                                 lastTime: performance.now(),
                                 lastBytes: 0
                             };
+
                             this.currentReceivingFileId = meta.fileId;
                             UI.createTransferItemUI(meta.fileId, meta.fileName, meta.fileSize, 'download');
                         }
@@ -652,22 +681,36 @@
                     return;
                 }
 
+                // Handle Incoming Binary File Chunks
                 if (!this.currentReceivingFileId || !this.activeReceives[this.currentReceivingFileId]) {
                     const keys = Object.keys(this.activeReceives);
                     if (keys.length > 0) {
                         this.currentReceivingFileId = keys[keys.length - 1];
-                    } else {
-                        return;
-                    }
+                    } else return;
                 }
 
                 const recv = this.activeReceives[this.currentReceivingFileId];
-                recv.chunks.push(data);
-                recv.receivedSize += data.byteLength;
 
+                // Write chunk to disk (OPFS) or push to RAM array
+                if (recv.useOPFS) {
+                    recv.writeQueue = recv.writeQueue.then(async () => {
+                        await recv.writable.write(data);
+                        this.updateProgressAndCheckFinish(recv, data.byteLength);
+                    });
+                } else {
+                    recv.chunks.push(data);
+                    this.updateProgressAndCheckFinish(recv, data.byteLength);
+                }
+            },
+
+            updateProgressAndCheckFinish(recv, bytesAdded) {
+                recv.receivedSize += bytesAdded;
+                
+                // Speed Calculation (throttle UI updates to 150ms)
                 const now = performance.now();
                 const timeDiff = (now - recv.lastTime) / 1000;
                 let speedStr = '';
+                
                 if (timeDiff >= 0.15) {
                     const bytesDiff = recv.receivedSize - recv.lastBytes;
                     speedStr = UI.formatSpeed(bytesDiff / timeDiff);
@@ -684,10 +727,20 @@
                 }
             },
 
-            finalizeReceivedFile(fileId) {
+            async finalizeReceivedFile(fileId) {
                 const recv = this.activeReceives[fileId];
-                const blob = new Blob(recv.chunks, { type: recv.mime || 'application/octet-stream' });
-                const downloadUrl = URL.createObjectURL(blob);
+                let downloadUrl;
+
+                if (recv.useOPFS) {
+                    // Close the disk stream and create a reference link to the actual file
+                    await recv.writable.close();
+                    const file = await recv.fileHandle.getFile();
+                    downloadUrl = URL.createObjectURL(file);
+                } else {
+                    // Create massive blob in memory (Fallback)
+                    const blob = new Blob(recv.chunks, { type: recv.mime || 'application/octet-stream' });
+                    downloadUrl = URL.createObjectURL(blob);
+                }
 
                 // Direct Save Trigger into Device Storage
                 const tempLink = document.createElement('a');
@@ -702,6 +755,16 @@
                 UI.senderSpeedIndicator.innerText = '0 MB/s';
                 UI.showToast(`Saved to device: ${recv.name}`, 'success');
 
+                // Cleanup OPFS after saving so it doesn't take up permanent space
+                if (recv.useOPFS) {
+                    setTimeout(async () => {
+                        try {
+                            const dir = await navigator.storage.getDirectory();
+                            await dir.removeEntry(recv.fileId);
+                        } catch (e) { console.error("OPFS Cleanup error", e); }
+                    }, 10000); // 10s gives the browser enough time to download it
+                }
+
                 delete this.activeReceives[fileId];
                 if (this.currentReceivingFileId === fileId) {
                     this.currentReceivingFileId = null;
@@ -714,6 +777,11 @@
                     UI.showToast('Waiting for receiving device to link...', 'warning');
                     return;
                 }
+
+                // Optimal chunk size for WebRTC throughput (~64KB)
+                const CHUNK_SIZE = 64 * 1024; 
+                // Maximum bytes buffered before pausing (16MB)
+                const MAX_BUFFER = 16 * 1024 * 1024; 
 
                 for (const file of files) {
                     const fileId = 'f_' + Math.random().toString(36).substr(2, 8);
@@ -729,50 +797,41 @@
 
                     this.dataChannel.send(headerMsg);
 
-                    const CHUNK_SIZE = 512 * 1024;
                     let offset = 0;
                     let lastTime = performance.now();
                     let lastBytes = 0;
 
-                    const sendChunk = async () => {
-                        while (offset < file.size) {
-                            const buffered = this.dataChannel.bufferedAmount || 0;
-                            
-                            if (buffered > 16 * 1024 * 1024) {
-                                await new Promise((resolve) => {
-                                    const onLow = () => {
-                                        this.dataChannel.removeEventListener('bufferedamountlow', onLow);
-                                        resolve();
-                                    };
-                                    this.dataChannel.addEventListener('bufferedamountlow', onLow);
-                                    setTimeout(resolve, 30);
-                                });
-                                continue;
-                            }
-
-                            const slice = file.slice(offset, offset + CHUNK_SIZE);
-                            const buffer = await slice.arrayBuffer();
-
-                            this.dataChannel.send(buffer);
-                            offset += buffer.byteLength;
-
-                            const now = performance.now();
-                            const timeDiff = (now - lastTime) / 1000;
-                            let speedStr = '';
-                            if (timeDiff >= 0.15) {
-                                const bytesDiff = offset - lastBytes;
-                                speedStr = UI.formatSpeed(bytesDiff / timeDiff);
-                                UI.senderSpeedIndicator.innerText = speedStr;
-                                UI.receiverSpeedIndicator.innerText = speedStr;
-                                lastTime = now;
-                                lastBytes = offset;
-                            }
-
-                            UI.updateTransferProgress(fileId, offset, file.size, speedStr);
+                    // Stream Chunking Loop
+                    while (offset < file.size) {
+                        // Smart Backpressure: Wait for pipe to empty if we've sent too much too fast
+                        if (this.dataChannel.bufferedAmount > MAX_BUFFER) {
+                            await new Promise((resolve) => {
+                                this.dataChannel.addEventListener('bufferedamountlow', resolve, { once: true });
+                            });
                         }
-                    };
 
-                    await sendChunk();
+                        const slice = file.slice(offset, offset + CHUNK_SIZE);
+                        const buffer = await slice.arrayBuffer();
+
+                        this.dataChannel.send(buffer);
+                        offset += buffer.byteLength;
+
+                        // UI Update
+                        const now = performance.now();
+                        const timeDiff = (now - lastTime) / 1000;
+                        let speedStr = '';
+                        
+                        if (timeDiff >= 0.15) {
+                            const bytesDiff = offset - lastBytes;
+                            speedStr = UI.formatSpeed(bytesDiff / timeDiff);
+                            UI.senderSpeedIndicator.innerText = speedStr;
+                            UI.receiverSpeedIndicator.innerText = speedStr;
+                            lastTime = now;
+                            lastBytes = offset;
+                        }
+
+                        UI.updateTransferProgress(fileId, offset, file.size, speedStr);
+                    }
 
                     UI.markTransferComplete(fileId, null, file.name, false);
                     UI.senderSpeedIndicator.innerText = '0 MB/s';
